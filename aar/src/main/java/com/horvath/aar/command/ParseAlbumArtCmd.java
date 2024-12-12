@@ -28,6 +28,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
 
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
@@ -107,6 +108,7 @@ public class ParseAlbumArtCmd extends AarCommand {
 
 		} catch (CannotReadException | IOException | TagException | ReadOnlyFileException
 				| InvalidAudioFrameException ex) {
+			Debugger.printLog("ERROR: " + ex.getMessage(), this.getClass().getName(), Level.SEVERE);
 			throw new AarException("Unexpected Exception: " + ex.getMessage(), ex);
 		}
 	}
