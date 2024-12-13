@@ -31,7 +31,10 @@ import org.junit.Test;
 
 import com.horvath.aar.exception.AarException;
 
-
+/**
+ * Tests operations of ParseAlbumArtCmd. 
+ * @author jhorvath
+ */
 public class ParseAlbumArtCmdTest {
 	
 	public static final String RESOURCES_DIRECTORY = "src" + File.separator + "test" 
@@ -77,16 +80,18 @@ public class ParseAlbumArtCmdTest {
 	@Test
 	public void perform_fileDoesNotHaveArt_messageReturned() {
 		try {
-			
-			File noArtMp3File = new File(RESOURCES_DIRECTORY + "No-Art" + File.separator + "snap.mp3");
+			File noArtMp3File = new File(RESOURCES_DIRECTORY + "No-Art" + File.separator + "snap-no-art.mp3");
 			
 			Assert.assertTrue(noArtMp3File.exists());
 			
 			ParseAlbumArtCmd cmd = new ParseAlbumArtCmd(noArtMp3File);
 			cmd.perform();
 			
+			// a file without art does not mean command failed
 			Assert.assertTrue(cmd.isSuccess());
+			// check message to be sure of what happened
 			Assert.assertEquals(ParseAlbumArtCmd.MESSAGE_NO_ARTWORK_FOUND, cmd.getMessage());
+			// expect the image to be null, since no art was in the MP3
 			Assert.assertNull(cmd.getBufferedImage());
 			
 		} catch (AarException ex) {
@@ -94,4 +99,23 @@ public class ParseAlbumArtCmdTest {
 		}
 	}
 
+	@Test
+	public void perform_mp3File_imageParsed() {
+		try {
+			File mp3File = new File(RESOURCES_DIRECTORY + "MP3-with-art" + File.separator + "snap.mp3");
+			
+			Assert.assertTrue(mp3File.exists());
+			
+			ParseAlbumArtCmd cmd = new ParseAlbumArtCmd(mp3File);
+			cmd.perform();
+			
+			Assert.assertTrue(cmd.isSuccess());
+			Assert.assertEquals(ParseAlbumArtCmd.MESSAGE_ARTWORK_PARSED, cmd.getMessage());
+			Assert.assertNotNull(cmd.getBufferedImage());
+
+		} catch (AarException ex) {
+			Assert.fail();
+		}
+	}
+	
 }
