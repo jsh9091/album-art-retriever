@@ -24,6 +24,7 @@
 
 package com.horvath.aar.command;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 
 import org.junit.Assert;
@@ -32,10 +33,10 @@ import org.junit.Test;
 import com.horvath.aar.exception.AarException;
 
 /**
- * Tests operations of ParseAlbumArtCmd. 
+ * Tests operations of WriteBufferedImageCmd. 
  * @author jhorvath
  */
-public class ParseAlbumArtCmdTest {
+public class WriteBufferedImageCmdTest {
 	
 	public static final String RESOURCES_DIRECTORY = "src" + File.separator + "test" 
 			+ File.separator + "resources"+ File.separator;
@@ -49,7 +50,7 @@ public class ParseAlbumArtCmdTest {
 		boolean caughtException = false;
 		try {
 			// file is null
-			ParseAlbumArtCmd cmd = new ParseAlbumArtCmd(null);
+			WriteBufferedImageCmd cmd = new WriteBufferedImageCmd(null, new BufferedImage(1, 1, 1));
 			cmd.perform();
 			
 			// should not get here
@@ -57,18 +58,16 @@ public class ParseAlbumArtCmdTest {
 			
 		} catch (AarException ex) {
 			caughtException = true;
-			Assert.assertTrue(ex.getMessage().contains(ParseAlbumArtCmd.ERROR_NULL_FILE));
+			Assert.assertTrue(ex.getMessage().contains(WriteBufferedImageCmd.ERROR_NULL_FILE));
 		}
 		Assert.assertTrue(caughtException);
 	}
 	
 	@Test
-	public void perform_fileDoesNotExist_exception() {
+	public void perform_folderNotReal_exception() {
 		boolean caughtException = false;
 		try {
-			// file does not exist
-			File fakeFile = new File("fake.mp3");
-			ParseAlbumArtCmd cmd = new ParseAlbumArtCmd(fakeFile);
+			WriteBufferedImageCmd cmd = new WriteBufferedImageCmd(new File("fakefolder"), new BufferedImage(1, 1, 1));
 			cmd.perform();
 			
 			// should not get here
@@ -76,69 +75,47 @@ public class ParseAlbumArtCmdTest {
 			
 		} catch (AarException ex) {
 			caughtException = true;
-			Assert.assertTrue(ex.getMessage().contains(ParseAlbumArtCmd.ERROR_FILE_DOES_NOT_EXIST));
+			Assert.assertTrue(ex.getMessage().contains(WriteBufferedImageCmd.ERROR_PARENT_FOLDER_DOES_NOT_EXIST));
 		}
 		Assert.assertTrue(caughtException);
 	}
 	
 	@Test
-	public void perform_fileDoesNotHaveArt_messageReturned() {
-		try {
-			File noArtMp3File = new File(RESOURCES_DIRECTORY + "No-Art" + File.separator + MP3_NO_ART);
-			
-			Assert.assertTrue(noArtMp3File.exists());
-			
-			ParseAlbumArtCmd cmd = new ParseAlbumArtCmd(noArtMp3File);
-			cmd.perform();
-			
-			// a file without art does not mean command failed
-			Assert.assertTrue(cmd.isSuccess());
-			// check message to be sure of what happened
-			Assert.assertEquals(ParseAlbumArtCmd.MESSAGE_NO_ARTWORK_FOUND, cmd.getMessage());
-			// expect the image to be null, since no art was in the MP3
-			Assert.assertNull(cmd.getBufferedImage());
-			
-		} catch (AarException ex) {
-			Assert.fail();
-		}
-	}
-
-	@Test
-	public void perform_mp3File_imageParsed() {
+	public void perform_fileIsNotFolder_exception() {
+		boolean caughtException = false;
 		try {
 			File mp3File = new File(RESOURCES_DIRECTORY + MP3_WITH_ART + File.separator + MP3);
 			
-			Assert.assertTrue(mp3File.exists());
-			
-			ParseAlbumArtCmd cmd = new ParseAlbumArtCmd(mp3File);
+			WriteBufferedImageCmd cmd = new WriteBufferedImageCmd(mp3File, new BufferedImage(1, 1, 1));
 			cmd.perform();
 			
-			Assert.assertTrue(cmd.isSuccess());
-			Assert.assertEquals(ParseAlbumArtCmd.MESSAGE_ARTWORK_PARSED, cmd.getMessage());
-			Assert.assertNotNull(cmd.getBufferedImage());
-
-		} catch (AarException ex) {
+			// should not get here
 			Assert.fail();
+			
+		} catch (AarException ex) {
+			caughtException = true;
+			Assert.assertTrue(ex.getMessage().contains(WriteBufferedImageCmd.ERROR_FILE_IS_NOT_FOLDER));
 		}
+		Assert.assertTrue(caughtException);
+	}
+	
+	@Test
+	public void perform_imageNull_exception() {
+		boolean caughtException = false;
+		try {
+			File mp3Folder= new File(RESOURCES_DIRECTORY + MP3_WITH_ART );
+			
+			WriteBufferedImageCmd cmd = new WriteBufferedImageCmd(mp3Folder, null);
+			cmd.perform();
+			
+			// should not get here
+			Assert.fail();
+			
+		} catch (AarException ex) {
+			caughtException = true;
+			Assert.assertTrue(ex.getMessage().contains(WriteBufferedImageCmd.ERROR_IMAGE_NULL));
+		}
+		Assert.assertTrue(caughtException);
 	}
 
-	@Test
-	public void perform_mp3File_getParentFolder() {
-		try {
-			File mp3File = new File(RESOURCES_DIRECTORY + MP3_WITH_ART + File.separator + MP3);
-			
-			Assert.assertTrue(mp3File.exists());
-			
-			ParseAlbumArtCmd cmd = new ParseAlbumArtCmd(mp3File);
-			cmd.perform();
-			
-			Assert.assertTrue(cmd.isSuccess());
-			
-			Assert.assertTrue(cmd.getParentDirectory().isDirectory());
-			Assert.assertTrue(cmd.getParentDirectory().getName().equals(MP3_WITH_ART));
-
-		} catch (AarException ex) {
-			Assert.fail();
-		}
-	}	
 }

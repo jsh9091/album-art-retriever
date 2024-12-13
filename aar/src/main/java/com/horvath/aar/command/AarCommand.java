@@ -26,6 +26,10 @@ package com.horvath.aar.command;
 
 import com.horvath.aar.exception.AarException;
 
+/**
+ * Abstract parent command class. 
+ * @author jhorvath 
+ */
 public abstract class AarCommand {
 	
 	protected String message = "";

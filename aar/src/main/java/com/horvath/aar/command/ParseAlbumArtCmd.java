@@ -112,6 +112,10 @@ public class ParseAlbumArtCmd extends AarCommand {
 			throw new AarException("Unexpected Exception: " + ex.getMessage(), ex);
 		}
 	}
+	
+	public File getParentDirectory() {
+		return this.file.getParentFile();
+	}
 
 	public BufferedImage getBufferedImage() {
 		return bufferedImage;
