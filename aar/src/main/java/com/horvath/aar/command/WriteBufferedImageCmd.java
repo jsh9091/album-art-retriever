@@ -69,6 +69,7 @@ public class WriteBufferedImageCmd extends AarCommand {
 	public WriteBufferedImageCmd(File folder, BufferedImage image, String name) {
 		this.folder = folder;
 		this.image = image;
+		this.name = name;
 	}
 	
 	@Override
@@ -117,4 +118,17 @@ public class WriteBufferedImageCmd extends AarCommand {
 			name = DEFAULT_NAME;
 		}
 	}
+
+	public File getFolder() {
+		return folder;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public BufferedImage getImage() {
+		return image;
+	}
+	
 }
