@@ -25,10 +25,15 @@
 package com.horvath.aar.command;
 
 import java.io.File;
+import java.util.logging.Level;
 
 import com.horvath.aar.application.Debugger;
 import com.horvath.aar.exception.AarException;
 
+/**
+ * Recursively processes all sub-folder for given folder and extracts album art from first MP3 file found. 
+ * @author jhorvath
+ */
 public class ParseFolderCmd extends AarCommand {
 	
 	private File rootFolder;
@@ -37,7 +42,6 @@ public class ParseFolderCmd extends AarCommand {
 	public static final String ERROR_FOLDER_DOES_NOT_EXIST = "The folder was not found.";
 	public static final String ERROR_FILE_IS_NOT_FOLDER = "The file is not a folder.";
 
-	
 	/**
 	 * Constructor. 
 	 * @param folder File
@@ -54,8 +58,84 @@ public class ParseFolderCmd extends AarCommand {
 		
 		validate();
 
+		processSubFolders(rootFolder);
 		
 		this.success = true;
+	}
+	
+	/**
+	 * Recursive method to explore sub-folders and call processing operations. 
+	 * @param folder File 
+	 * @throws AarException
+	 */
+	private void processSubFolders(File folder) throws AarException {
+	    File[] files = folder.listFiles();
+	    
+        for (File file: files) {
+            if (file.isDirectory()) {
+            	// recurse, and go down another folder level 
+                processSubFolders(file);
+            }
+            else {
+                if (findMp3File(file)) {
+                	return;
+                }
+            }
+        }
+	}
+	
+	/**
+	 * Checks if given file is an MP3, and attempts to process the image from it.
+	 * Returns true only if file is an MP3, and album art image written to disk.
+	 * 
+	 * @param file File 
+	 * @return boolean 
+	 * 
+	 */
+	private boolean findMp3File(File file) {
+		
+		boolean result = false;
+		
+		if (!file.exists() || file.isDirectory()) {
+			return result;
+		}
+		
+		if (file.getName().toLowerCase().endsWith(".mp3")) {
+			result = processMp3File(file);
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * Parses the album art from MP3 file. 
+	 * Returns true if image file written to disk. 
+	 * 
+	 * @param mp3 File 
+	 * @return boolean 
+	 */
+	private boolean processMp3File(File mp3) {
+		boolean result = false; 
+		
+		try {
+			// process buffered image 
+			ParseAlbumArtCmd parseArtCmd = new ParseAlbumArtCmd(mp3);
+			parseArtCmd.perform();
+			
+			if (parseArtCmd.isSuccess()) {
+				
+				WriteBufferedImageCmd writeCmd = new WriteBufferedImageCmd(mp3.getParentFile(), parseArtCmd.getBufferedImage());
+				writeCmd.perform();
+				
+				result = writeCmd.isSuccess();
+			}
+
+		} catch (AarException ex) {
+			Debugger.printLog("Error: " + ex.getMessage(), this.getClass().getName(), Level.WARNING);
+			return false;
+		}
+		
+		return result;
 	}
 	
 	
@@ -75,8 +155,7 @@ public class ParseFolderCmd extends AarCommand {
 		
 		if (!rootFolder.isDirectory()) {
 			throw new AarException(ERROR_FILE_IS_NOT_FOLDER);
-		}
-		
+		}		
 	}
 
 }
