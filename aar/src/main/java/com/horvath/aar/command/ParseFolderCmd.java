@@ -90,7 +90,6 @@ public class ParseFolderCmd extends AarCommand {
 	 * 
 	 * @param file File 
 	 * @return boolean 
-	 * 
 	 */
 	private boolean findMp3File(File file) {
 		

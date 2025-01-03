@@ -163,7 +163,7 @@ public class WriteBufferedImageCmdTest {
 	@Test
 	public void perform_goodFileGoodImage_fileGenerated() {
 		
-		File imageFile = new File(RESOURCES_DIRECTORY + MP3_WITH_ART + File.separator +WriteBufferedImageCmd.DEFAULT_NAME);
+		File imageFile = new File(RESOURCES_DIRECTORY + MP3_WITH_ART + File.separator + WriteBufferedImageCmd.DEFAULT_NAME);
 		
 		// perform cleanups after a failed run
 		if (imageFile.exists()) {

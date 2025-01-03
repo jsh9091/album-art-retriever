@@ -28,12 +28,14 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 import com.horvath.aar.command.ParseAlbumArtCmdTest;
+import com.horvath.aar.command.ParseFolderCmdTest;
 import com.horvath.aar.command.WriteBufferedImageCmdTest;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
 	ParseAlbumArtCmdTest.class,
-	WriteBufferedImageCmdTest.class
+	WriteBufferedImageCmdTest.class,
+	ParseFolderCmdTest.class
 })
 
 public class AarTestSuite { }
