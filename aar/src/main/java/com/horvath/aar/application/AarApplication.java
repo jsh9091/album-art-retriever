@@ -24,11 +24,20 @@
 
 package com.horvath.aar.application;
 
+/**
+ * Main application class for AAR.
+ * @author jhorvath
+ */
 public class AarApplication {
 
 	public static void main(String[] args) {
-		
 
+		if (args.length > 0) {
+			new CliApp(args[0]).run();
+			
+		} else {
+			System.out.println("A file or folder arument was not given.");
+		}
 	}
 
 }
