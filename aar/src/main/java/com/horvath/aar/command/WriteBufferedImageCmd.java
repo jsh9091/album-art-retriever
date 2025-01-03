@@ -87,8 +87,10 @@ public class WriteBufferedImageCmd extends AarCommand {
 			success = true;
 			
 		} catch (IOException ex) {
-			Debugger.printLog("ERROR: " + ex.getMessage(), this.getClass().getName(), Level.SEVERE);
-			throw new AarException("Unexpected Exception: " + ex.getMessage(), ex);
+			final String message = "Unexpected Exception: " + ex.getMessage();
+			Debugger.printLog(message, this.getClass().getName(), Level.SEVERE);
+			this.message = message;
+			throw new AarException(message, ex);
 		}
 	}
 

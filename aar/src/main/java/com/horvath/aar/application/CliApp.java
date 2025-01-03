@@ -27,6 +27,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 
 import com.horvath.aar.command.ParseAlbumArtCmd;
+import com.horvath.aar.command.ParseFolderCmd;
 import com.horvath.aar.command.WriteBufferedImageCmd;
 import com.horvath.aar.exception.AarException;
 
@@ -46,10 +47,13 @@ public class CliApp {
 		this.file = new File(path);
 	}
 	
+	/**
+	 * Fires operations. 
+	 */
 	public void run() {
 		
 		if (file.isDirectory()) {
-			// TODO call folder command 
+			parseFolders(file);
 			
 		} else {
 			parsefile(file);
@@ -75,12 +79,31 @@ public class CliApp {
 					System.out.println("Successfully wrote MP3 art file to " + file.getParent());
 					
 				} else {
-					System.err.println("Somethig went wrong with writing the jpeg art file.");
+					System.err.println("Somethig went wrong with writing the jpeg art file. " + writeCmd.getMessage());
 				}
 			} else {
-				System.err.println("Somethig went wrong with reading the MP3 file.");
+				System.err.println("Somethig went wrong with reading the MP3 file. " + parseCmd.getMessage());
 			}
 			
+		} catch (AarException ex) {
+			System.err.println(ex.getMessage());
+		}
+	}
+	
+	/**
+	 * 
+	 * @param folder File 
+	 */
+	private void parseFolders(File folder) {
+		try {
+			ParseFolderCmd cmd = new ParseFolderCmd(folder);
+			cmd.perform();
+			
+			if (cmd.isSuccess()) {
+				System.out.println("Successfully parsed MP3 art files.");
+			} else {
+				System.err.println("Something went wrong processing the folder. " + cmd.getMessage());
+			}
 		} catch (AarException ex) {
 			System.err.println(ex.getMessage());
 		}

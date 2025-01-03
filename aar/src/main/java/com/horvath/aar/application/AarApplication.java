@@ -36,6 +36,7 @@ public class AarApplication {
 			new CliApp(args[0]).run();
 			
 		} else {
+			// can put other code here if we want to make a GUI version of tool. 
 			System.out.println("A file or folder arument was not given.");
 		}
 	}
