@@ -71,14 +71,17 @@ public class ParseFolderCmd extends AarCommand {
 	private void processSubFolders(File folder) throws AarException {
 	    File[] files = folder.listFiles();
 	    
+	    boolean keepLooking = true;
+	    
         for (File file: files) {
             if (file.isDirectory()) {
             	// recurse, and go down another folder level 
                 processSubFolders(file);
             }
             else {
-                if (findMp3File(file)) {
-                	return;
+                if (keepLooking && findMp3File(file)) {
+                	// keep cycling in loop to make sure no sub-folders are skipped
+                	keepLooking = false;
                 }
             }
         }
